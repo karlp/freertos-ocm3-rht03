@@ -1,0 +1,36 @@
+*.o
+# avr compiled cruft
+*.ls[st]
+*.list
+*.d
+*.sym
+*.srec
+*.hex
+*.elf
+*.bin
+*.eep
+*.map
+.dep/
+.dep.inc
+
+# netbeans
+nbproject/
+#intellij
+.idea/
+
+# python droppings
+*.pyc
+*.pyo
+
+# virtualenv common names.
+.env
+
+# vim droppings
+*.*~
+*~
+.*.swp
+
+#eagle backups
+*.b#?
+*.s#?
+*.l#?
