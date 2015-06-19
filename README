@@ -1,0 +1,12 @@
+experimental repo for moving some blobby hacky statemachines from old code over
+to freertos.
+
+goals are:
+a) easier to read and extend code
+b) lower power
+
+(lower power by not having to fiddle with _everythign_ myself, and just letting
+a lot of it go with freertos's existing low power code)
+
+code is targetting a private experimental node, based on the karlnet boxcar v4b
+board.
