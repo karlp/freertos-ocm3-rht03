@@ -49,6 +49,11 @@ extern "C" {
 		long last_send_time;
 
 	};
+	
+	enum trace_ports {
+		STIM_CONSOLE = 0,
+		STIM_RHT_IO
+	};
 
 
 #ifdef	__cplusplus

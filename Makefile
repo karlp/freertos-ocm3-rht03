@@ -17,6 +17,7 @@ INCLUDES += $(patsubst %,-I%, . $(FREERTOS_INC) $(FREERTOS_PORT))
 LDFLAGS += -Wl,--undefined=uxTopUsedPriority
 
 CFILES = boxcar.c
+CFILES += trace.c
 CFILES += $(FREERTOS_SRCS)
 
 include rules.mk

@@ -23,6 +23,7 @@
 #include <libopencm3/stm32/timer.h>
 
 #include "syscfg.h"
+#include "trace.h"
 
 struct state_t volatile state;
 
@@ -128,6 +129,7 @@ void RHT_isr(void)
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	exti_reset_request(RHT_EXTI);
 	int cnt = TIM7_CNT;
+	trace_send_blocking16(STIM_RHT_IO, cnt);
 	TIM7_CNT = 0;
 	// Skip catching ourself pulsing the start line until the 150uS start.
 	if (!state.seen_startbit) {
@@ -142,7 +144,8 @@ void RHT_isr(void)
 		stuff_bit(state.bitcount - 1, cnt, state.rht_bytes);
 	}
 	state.bitcount++;
-	if (state.bitcount >= 40) {
+	if (state.bitcount >= 42) {
+		nvic_disable_irq(RHT_NVIC);
 		xTaskNotifyFromISR( xHandleRht, RHT_FLAG_COMPLETE, eSetBits, &xHigherPriorityTaskWoken );
 		portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 	}
@@ -211,9 +214,9 @@ static void taskRht_Single(void) {
 			unsigned chksum = state.rht_bytes[0] + state.rht_bytes[1] + state.rht_bytes[2] + state.rht_bytes[3];
 			chksum &= 0xff;
 			// Removing this print makes the checksum fail most of the time! :|
-			printf("%x %x %x %x sum: %x == %x\n",
-				state.rht_bytes[0], state.rht_bytes[1], state.rht_bytes[2], state.rht_bytes[3],
-				chksum, state.rht_bytes[4]);
+//			printf("%x %x %x %x sum: %x == %x\n",
+//				state.rht_bytes[0], state.rht_bytes[1], state.rht_bytes[2], state.rht_bytes[3],
+//				chksum, state.rht_bytes[4]);
 			if (chksum != state.rht_bytes[4]) {
 				printf("CHKSUM failed, ignoring: \n");
 				return;
