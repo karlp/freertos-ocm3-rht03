@@ -22,10 +22,6 @@
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/timer.h>
 
-#include <simrf.h>
-#include "simrf_plat.h"
-#include "karlnet.h"
-
 #include "syscfg.h"
 #include "jacks.h"
 
@@ -37,7 +33,7 @@ const struct jack_t jack1 = {
 	.val_pin = GPIO0,
 	.val_port = GPIOA,
 	.val_channel = ADC_CHANNEL0,
-	.sensor_type = KPS_SENSOR_NTC_10K_3V3_12bit,
+//	.sensor_type = KPS_SENSOR_NTC_10K_3V3_12bit,
 	.power_on_time_millis = 5 // just a guess
 };
 
@@ -115,7 +111,7 @@ void systick_setup(void)
 {
 
 	/* 24MHz / 8 => 3000000 counts per second. */
-	systick_set_clocksource(STK_CTRL_CLKSOURCE_AHB_DIV8);
+	systick_set_clocksource(STK_CSR_CLKSOURCE_AHB_DIV8);
 
 	/* 3000000/3000 = 1000 overflows per second - every 1ms one interrupt */
 	systick_set_reload(3000);
@@ -312,16 +308,6 @@ static void prvTaskRht(void *pvParameters) {
 }
 
 
-static void handle_tx(simrf_tx_info_t *txinfo)
-{
-	if (txinfo->tx_ok) {
-		printf("TX went ok, got ack\n");
-	} else {
-		printf("TX failed after %d retries\n", txinfo->retries);
-	}
-	printf("SLEEP\n");
-	simrf_immediate_sleep();
-}
 
 static void loop_forever(void)
 {
@@ -363,33 +349,16 @@ static void task_send_data(volatile struct state_t *st)
 {
 	if (millis() - 3000 > st->last_send_time) {
 		printf("WAKESEND...\n");
-		simrf_immediate_wakeup();
-		kpacket2 kp;
-		kp.header = 'x';
-		int sensor_count = 2;
 
-		ksensor s1 = {KPS_SENSOR_TEMPERATURE, st->last_temperature * 1000};
-		ksensor s2 = {KPS_SENSOR_RELATIVE_HUMIDITY, st->last_relative_humidity * 1000};
-		ksensor ch1 = {0, 0};
-		ksensor ch2 = {0, 0};
 		if (jack_connected(&jack1)) {
-			sensor_count++;
-			ch1.type = jack1.sensor_type;
-			ch1.value = st->jack_machine1.last_value;
+			//ch1.type = jack1.sensor_type;
+			//ch1.value = st->jack_machine1.last_value;
 		}
 		if (jack_connected(&jack2)) {
-			sensor_count++;
-			ch2.type = jack2.sensor_type;
-			ch2.value = st->jack_machine2.last_value;
+			//ch2.type = jack2.sensor_type;
+			//ch2.value = st->jack_machine2.last_value;
 		}
-		kp.ksensors[0] = s1;
-		kp.ksensors[1] = s2;
-		kp.ksensors[2] = ch1;
-		kp.ksensors[3] = ch2;
-		kp.versionCount = VERSION_COUNT(2, sensor_count);
-
-		simrf_send16(state.rf_dest_id, sizeof (kp), (void*) &kp);
-		st->last_send_time = millis();
+		//st->last_send_time = millis();
 	}
 }
 
@@ -427,20 +396,6 @@ int main(void)
 	
 	xTaskCreate(prvTaskTicker, "ticker", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
 
-#if 0
-	platform_simrf_init();
-	// interrupt pin from mrf
-	platform_mrf_interrupt_enable();
-
-	simrf_soft_reset();
-	simrf_init();
-	simrf_immediate_sleep();
-
-	simrf_pan_write(0xcafe);
-	uint16_t pan_sanity_check = simrf_pan_read();
-	printf("pan read back in as %#x\n", pan_sanity_check);
-	simrf_address16_write(0x1111);
-#endif
 	adc_power_on(ADC1);
 	adc_reset_calibration(ADC1);
 	adc_calibration(ADC1);
@@ -454,21 +409,6 @@ int main(void)
 	vTaskStartScheduler();
 
 	while (1) {
-#if 0
-		struct jacks_result_t jr1, jr2;
-		simrf_check_flags(NULL, &handle_tx);
-		loop_forever();
-		jack_run_task(&state.jack_machine1, &jr1);
-		if (jr1.ready) {
-			printf("Channel 1 result: %d\n", jr1.value);
-		}
-		jack_run_task(&state.jack_machine2, &jr2);
-		if (jr2.ready) {
-			printf("Channel 2 result: %d\n", jr2.value);
-		}
-		task_send_data(&state);
-		__WFI();
-#endif
 	}
 
 	return 0;

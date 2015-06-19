@@ -1,5 +1,5 @@
 
-PROJECT=boxcar-freertos
+PROJECT=rht-freertos
 
 FREERTOS_DIR = /home/karlp/src/FreeRTOSV8.2.1/FreeRTOS
 FREERTOS_PORT = $(FREERTOS_DIR)/Source/portable/GCC/ARM_CM3
@@ -18,13 +18,6 @@ LDFLAGS += -Wl,--undefined=uxTopUsedPriority
 
 CFILES = boxcar.c
 CFILES += jacks.c
-CFILES += simrf_plat.c
 CFILES += $(FREERTOS_SRCS)
 
-CFLAGS+=-I../../../libs/simrf/lib
-CFLAGS+=-I../../../common
-LDFLAGS+=-L../../../libs/simrf/lib -lsimrf
-
 include rules.mk
-
-

@@ -13,7 +13,7 @@ LD	    = $(PREFIX)gcc
 OBJCOPY	    = $(PREFIX)objcopy
 OBJDUMP	    = $(PREFIX)objdump
 
-OPENCM3_DIR = ../../../libs/libopencm3
+OPENCM3_DIR = libopencm3
 OPENCM3_INC = $(OPENCM3_DIR)/include
 OPENCM3_DEFS = -DSTM32F1
 

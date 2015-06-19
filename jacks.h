@@ -12,19 +12,19 @@
 extern "C" {
 #endif
 
-
+#include <stdint.h>
 #include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/f1/adc.h>
+#include <libopencm3/stm32/adc.h>
 #include "syscfg.h"
 
 	struct jack_t {
-		u32 power_port;
-		u32 power_pin;
-		u32 en_port;
-		u32 en_pin;
-		u32 val_port;
-		u32 val_pin;
-		u32 val_channel;
+		uint32_t power_port;
+		uint32_t power_pin;
+		uint32_t en_port;
+		uint32_t en_pin;
+		uint32_t val_port;
+		uint32_t val_pin;
+		uint32_t val_channel;
 		int power_on_time_millis;
 		int sensor_type;
 	};

@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/f1/adc.h>
+#include <libopencm3/stm32/adc.h>
 #include "syscfg.h"
 #include "ms_systick.h"
 #include "jacks.h"
@@ -66,7 +66,7 @@ void jack_run_task(volatile struct jacks_machine_t *machine, struct jacks_result
 		adc_set_single_conversion_mode(ADC1);
 		adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_28DOT5CYC);
 		//adc_set_single_channel(ADC1, machine->jack->val_channel);
-		adc_set_regular_sequence(ADC1, 1, (u8*)&(machine->jack->val_channel));
+		adc_set_regular_sequence(ADC1, 1, (uint8_t*)&(machine->jack->val_channel));
 
 		adc_enable_external_trigger_regular(ADC1, ADC_CR2_EXTSEL_SWSTART);
 		adc_start_conversion_regular(ADC1);
