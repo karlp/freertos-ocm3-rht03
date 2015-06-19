@@ -1,0 +1,30 @@
+
+PROJECT=boxcar-freertos
+
+FREERTOS_DIR = /home/karlp/src/FreeRTOSV8.2.1/FreeRTOS
+FREERTOS_PORT = $(FREERTOS_DIR)/Source/portable/GCC/ARM_CM3
+FREERTOS_INC = $(FREERTOS_DIR)/Source/include
+FREERTOS_SRC = $(FREERTOS_DIR)/Source
+FREERTOS_MMG = $(FREERTOS_DIR)/Source/portable/MemMang
+FREERTOS_SRCS = list.c queue.c tasks.c timers.c port.c heap_1.c
+FREERTOS_SRCS += FreeRTOS-openocd.c
+
+VPATH += $(FREERTOS_SRC) $(FREERTOS_PORT) $(FREERTOS_MMG)
+
+# Inclusion of header files
+INCLUDES += $(patsubst %,-I%, . $(FREERTOS_INC) $(FREERTOS_PORT))
+
+LDFLAGS += -Wl,--undefined=uxTopUsedPriority
+
+CFILES = boxcar.c
+CFILES += jacks.c
+CFILES += simrf_plat.c
+CFILES += $(FREERTOS_SRCS)
+
+CFLAGS+=-I../../../libs/simrf/lib
+CFLAGS+=-I../../../common
+LDFLAGS+=-L../../../libs/simrf/lib -lsimrf
+
+include rules.mk
+
+
