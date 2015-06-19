@@ -255,11 +255,19 @@ static void prvTaskRht(void *pvParameters) {
 
 static void prvTaskTicker(void *pvParameters) {
 	(void)pvParameters;
+	TickType_t xLastWakeTime;
+	const TickType_t xFrequency = pdMS_TO_TICKS(1000);
+
+	xLastWakeTime = xTaskGetTickCount();
 	while (1) {
-		vTaskDelay(portTICK_PERIOD_MS * 1000);
+		// Wait for the next cycle.
+		vTaskDelayUntil(&xLastWakeTime, xFrequency);
 		printf("Tick: %d\n", state.seconds);
 		state.seconds++;
-		gpio_toggle(PORT_STATUS_LED, PIN_STATUS_LED);
+		// TODO use even less power by setting up pwm on that pin.
+		gpio_set(PORT_STATUS_LED, PIN_STATUS_LED);
+		vTaskDelay(pdMS_TO_TICKS(50));
+		gpio_clear(PORT_STATUS_LED, PIN_STATUS_LED);
 	}
 }
 
